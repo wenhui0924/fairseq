@@ -219,6 +219,9 @@ def main(cfg: FairseqConfig) -> None:
     train_meter.stop()
     logger.info("done training in {:.1f} seconds".format(train_meter.sum))
 
+    if getattr(epoch_itr, "should_close_after_finished", False):
+        epoch_itr.close()
+
     # ioPath implementation to wait for all asynchronous file writes to complete.
     if cfg.checkpoint.write_checkpoints_asynchronously:
         logger.info(

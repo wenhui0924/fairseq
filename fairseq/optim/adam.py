@@ -38,6 +38,7 @@ class FairseqAdamConfig(FairseqDataclass):
     )
     # TODO common vars below in parent
     tpu: bool = II("common.tpu")
+    bf16: bool = II("common.bf16")
     lr: List[float] = II("optimization.lr")
 
 
@@ -52,7 +53,10 @@ class FairseqAdam(FairseqOptimizer):
 
     def __init__(self, cfg: FairseqAdamConfig, params):
         super().__init__(cfg)
-        fused_adam_cls = get_fused_adam_class()
+        adam_v2 = False
+        if getattr(cfg, "bf16", False):
+            adam_v2 = True
+        fused_adam_cls = get_fused_adam_class(adam_v2)
         use_fused_adam = (
             not getattr(cfg, "use_old_adam", False)
             and fused_adam_cls is not None

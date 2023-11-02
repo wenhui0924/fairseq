@@ -8,33 +8,44 @@ import types
 import torch
 
 
-def get_fused_adam_class():
+def get_fused_adam_class(v2=False):
     """
     Look for the FusedAdam optimizer from apex. We first try to load the
     "contrib" interface, which is a bit faster than the main interface,
     but is technically deprecated.
     """
-    try:
-        # The "deprecated" interface in recent versions of apex is a bit
-        # faster than the main interface, since we don't use the apex
-        # optimizer. This can be installed by passing the
-        # `--deprecated_fused_adam` option when building apex.
-        global fused_adam_cuda
-        import importlib
-
-        fused_adam_cuda = importlib.import_module("fused_adam_cuda")
-        return FusedAdamV1
-    except ImportError:
+    if v2:
         try:
             # fallback to the newer interface
-            from apex.multi_tensor_apply import multi_tensor_applier
             from apex.optimizers import FusedAdam as _FusedAdam  # noqa
+            from apex.multi_tensor_apply import multi_tensor_applier
 
             if multi_tensor_applier.available:
                 return FusedAdamV2
         except ImportError:
             pass
-    return None
+    else:
+        try:
+            # The "deprecated" interface in recent versions of apex is a bit
+            # faster than the main interface, since we don't use the apex
+            # optimizer. This can be installed by passing the
+            # `--deprecated_fused_adam` option when building apex.
+            global fused_adam_cuda
+            import importlib
+
+            fused_adam_cuda = importlib.import_module("fused_adam_cuda")
+            return FusedAdamV1
+        except ImportError:
+            try:
+                # fallback to the newer interface
+                from apex.multi_tensor_apply import multi_tensor_applier
+                from apex.optimizers import FusedAdam as _FusedAdam  # noqa
+
+                if multi_tensor_applier.available:
+                    return FusedAdamV2
+            except ImportError:
+                pass
+        return None
 
 
 class FusedAdamV1(torch.optim.Optimizer):
