@@ -84,9 +84,12 @@ class LegacyDistributedDataParallel(nn.Module):
 
         assert all([len([k for k in t if hasattr(k, 'base_expert')]) == 0 for t in per_device_params])
 
-        # assign local pg
-        assert hasattr(get_moe_group, "_moe_groups") # need to init groups first
-        _, self.local_pg = get_moe_group()
+        try:
+            _, self.local_pg = get_moe_group()
+            self.moe = True
+        except:
+            assert sum([len(t) for t in self.per_device_params_expert]) == 0, 'Expert params are not supported without torchscale'
+            self.moe = False
 
         #start_pdb_on_rank_zero()
         #print('hi')
@@ -155,7 +158,8 @@ class LegacyDistributedDataParallel(nn.Module):
         curr_world_size = dist.get_world_size(self.process_group)
         self._all_reduce_grads(self.per_device_params_normal, self.buffer, self.process_group, curr_world_size)
         # reduce expert params
-        self._all_reduce_grads(self.per_device_params_expert, self.buffer, self.local_pg, curr_world_size)
+        if self.moe:
+            self._all_reduce_grads(self.per_device_params_expert, self.buffer, self.local_pg, curr_world_size)
 
 
     def _all_reduce_grads(self, current_params, curr_buffer, curr_process_group, curr_world_size):
