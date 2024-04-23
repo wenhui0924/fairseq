@@ -159,7 +159,11 @@ class Trainer(object):
             else:
                 # self.expert_group = get_zero_group(torch.cuda.device_count() * 2)
                 # self.data_parallel_process_group
-                self.expert_group = self.data_parallel_process_group
+                # self.expert_group = self.data_parallel_process_group
+                if self.cfg.distributed_training.zero_group_size > 0:
+                    self.expert_group = get_zero_group(torch.cuda.device_count() * self.cfg.distributed_training.zero_group_size)
+                else:
+                    self.expert_group = self.data_parallel_process_group
 
         # TODO(myleott): support tpu
         if self.cuda and self.data_parallel_world_size > 1:
