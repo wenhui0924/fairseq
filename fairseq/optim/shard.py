@@ -45,7 +45,7 @@ def shard_(optimizer, group):
             return utils.broadcast_object(
                 state_dict,
                 src_rank=0,
-                group=self.group,
+                group=self.process_group,
             )
 
     torch_optimizer = optimizer.optimizer
