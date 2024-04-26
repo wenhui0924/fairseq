@@ -254,7 +254,7 @@ class Trainer(object):
     def should_save_checkpoint_on_current_rank(self) -> bool:
         """Indicates whether to save checkpoints on the current DDP rank."""
         has_alt_ffn_dim = getattr(self.cfg.model, "alternate_decoder_ffn_embed_dim", 0) != 0
-        if self.cfg.distributed_training.zero_sharding == "os" and self.self.cfg.distributed_training.save_zero_ckpt_fast:
+        if self.cfg.distributed_training.zero_sharding == "os" and self.cfg.distributed_training.save_zero_ckpt_fast:
             if self.zero_group_local_group == 0:
                 return True
             return False
@@ -423,7 +423,7 @@ class Trainer(object):
             assert self._gathered_optim_state is not None
 
     def state_dict(self, filename, training_finished=False) -> Dict[str, Dict]:
-        if self.cfg.distributed_training.zero_sharding == 'os' and self.self.cfg.distributed_training.save_zero_ckpt_fast:
+        if self.cfg.distributed_training.zero_sharding == 'os' and self.cfg.distributed_training.save_zero_ckpt_fast:
             model_state_dict = self.model.state_dict() if self.zero_group_local_rank == 0 else {}
             filename = filename.replace('.pt', f'-zero-{self.zero_group_local_rank}.pt')
 
