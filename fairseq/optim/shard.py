@@ -48,6 +48,13 @@ def shard_(optimizer, group):
                 group=self.process_group,
             )
 
+        def state_dict(self) -> Dict[str, Any]:
+            state_dicts = {
+                "local_optim_state": self.optim.state_dict(),
+                "global_optim_state": super(ZeroRedundancyOptimizer, self).state_dict(),
+            }
+            return state_dicts
+
     torch_optimizer = optimizer.optimizer
     optim_cls = type(torch_optimizer)
 
