@@ -411,7 +411,7 @@ class Trainer(object):
         self._gathered_optim_state = None
         if self.cfg.checkpoint.no_save_optimizer_state:
             return
-        if self.self.cfg.distributed_training.save_zero_ckpt_fast:
+        if self.cfg.distributed_training.save_zero_ckpt_fast:
             return
         if hasattr(self.optimizer.optimizer, "consolidate_state_dict"):
             self.optimizer.optimizer.consolidate_state_dict()
