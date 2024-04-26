@@ -52,6 +52,8 @@ def shard_(optimizer, group):
             state_dicts = {
                 "local_optim_state": self.optim.state_dict(),
                 "global_optim_state": super(ZeroRedundancyOptimizer, self).state_dict(),
+                "_partition_parameters_cache": self._partition_parameters_cache,
+                "_param_to_index": self._param_to_index,
             }
             return state_dicts
 
