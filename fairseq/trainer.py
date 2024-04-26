@@ -433,6 +433,9 @@ class Trainer(object):
                 optim_state = getattr(self, '_gathered_optim_state', None) or self.optimizer.state_dict()
                 if self.zero_group_local_rank > 0:
                     optim_state["global_optim_state"] = {}
+                    optim_state["_partition_parameters_cache"] = {}
+                    optim_state["_param_to_index"] = {}
+
             model_save_list = [(
                 filename,
                 model_state_dict,
