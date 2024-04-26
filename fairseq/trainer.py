@@ -438,7 +438,7 @@ class Trainer(object):
                 model_state_dict,
                 optim_state,
             )]
-        if self.is_moe or self.is_base_moe:
+        elif self.is_moe or self.is_base_moe:
             (
                 (shared_model_state_dict, shared_optimizer_state_dict),
                 (expert_model_state_dict, expert_optimizer_state_dict),
