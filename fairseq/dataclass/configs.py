@@ -368,6 +368,12 @@ class DistributedTrainingConfig(FairseqDataclass):
     zero_sharding: ZERO_SHARDING_CHOICES = field(
         default="none", metadata={"help": "ZeRO sharding"}
     )
+    zero_group_size: Optional[int] = field(
+        default=-1, metadata={"help": "Size for group zero"}
+    )
+    save_zero_ckpt_fast: bool = field(
+        default=False
+    )
     fp16: bool = II("common.fp16")
     memory_efficient_fp16: bool = II("common.memory_efficient_fp16")
     tpu: bool = II("common.tpu")
