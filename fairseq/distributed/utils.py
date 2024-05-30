@@ -7,6 +7,7 @@ import contextlib
 import io
 import logging
 import os
+import datetime
 import pickle
 import random
 import socket
@@ -270,6 +271,7 @@ def distributed_init(cfg: FairseqConfig):
                 init_method=cfg.distributed_training.distributed_init_method,
                 world_size=cfg.distributed_training.distributed_world_size,
                 rank=cfg.distributed_training.distributed_rank,
+                timeout=datetime.timedelta(seconds=3600),
             )
             logger.info(
                 "initialized host {} as rank {}".format(
